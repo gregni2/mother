@@ -22,7 +22,6 @@ public class LeaderFinder {
         DateFormat df = new SimpleDateFormat("yyyy-mm-dd");
         ArrayList<Leader> possibleLeaders = new ArrayList<>();
 
-
         //
         // Iterate through all the stocks that went up.
         //
@@ -124,8 +123,6 @@ public class LeaderFinder {
                 Date currentLeaderDate = currentLeadersDateFormat.parse(dateUp);
                 currentLeaderDate = addDays(currentLeaderDate, 2);
 
-
-
                 Iterator<Leader> possibleFollowersIterator = mStocksMovedUp.iterator();
                 while (possibleFollowersIterator.hasNext()) {
                     Leader possibleFollower = possibleFollowersIterator.next();
@@ -139,8 +136,6 @@ public class LeaderFinder {
                             currentFollowerDate.after(currentLeaderDate)) {
                        System.out.println("\t\tpossible follower " + possibleFollower.mStockName);
                        // System.out.println("Looking to see if others ");
-
-
 
 
                        //

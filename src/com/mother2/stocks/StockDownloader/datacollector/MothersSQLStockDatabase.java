@@ -23,7 +23,7 @@ public class MothersSQLStockDatabase {
         }
 
         try {
-            mConnection = DriverManager.getConnection("jdbc:sqlite:sample.db");
+            mConnection = DriverManager.getConnection("jdbc:sqlite:motherdatabase.db");
         } catch (Exception e) {
             System.err.println("Exception e = " + e);
         }
@@ -98,7 +98,8 @@ public class MothersSQLStockDatabase {
         try {
             statement = mConnection.createStatement();
             ResultSet rs = statement.executeQuery("SELECT COUNT(*) AS total FROM stockpoint");
-            return rs.getInt("total");
+            int total = rs.getInt("total");
+            return total;
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -20,6 +20,10 @@ public class Leader {
         this.mCurrentStockPrice = currentStockPrice;
     }
 
+    public Leader() {
+
+    }
+
     public void addFollower(Follower follower) {
         mFollowers.add(follower);
     }

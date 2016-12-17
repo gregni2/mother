@@ -70,7 +70,7 @@ public class YahooStocksToDatabaseDownloader {
             //
             String stockName = iter.next();
             mLogger.debug("Stockname = " + stockName);
-            System.out.println("Stockname = " + stockName + " count = " + count);
+            // System.out.println("Stockname = " + stockName + " count = " + count);
 
 
             //

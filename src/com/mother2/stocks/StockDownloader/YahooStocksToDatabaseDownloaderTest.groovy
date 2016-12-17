@@ -8,16 +8,16 @@ import com.mother2.stocks.StockDownloader.datacollector.MothersSQLStockDatabase
 class YahooStocksToDatabaseDownloaderTest extends GroovyTestCase {
     void testDownloadStocks() {
 
-        final int MAX_STOCKS_TO_READ = 500;
+        final int MAX_STOCKS_TO_READ = 40;
         final GregorianCalendar START_STOCK_HISTORY = new GregorianCalendar(2010, 1, 1);
         final GregorianCalendar END_STOCK_HISTORY = new GregorianCalendar(2015, 3, 30);
 
         YahooStocksToDatabaseDownloader yahooStocksToDatabaseDownloader =
                 new YahooStocksToDatabaseDownloader(MAX_STOCKS_TO_READ, START_STOCK_HISTORY, END_STOCK_HISTORY);
 
-        yahooStocksToDatabaseDownloader.downloadStocks(2 /*stock names*/, 0/*sleeping mintes*/);
+        yahooStocksToDatabaseDownloader.downloadStocks(2 /*stock names*/, 0/*sleeping minutes*/);
 
         MothersSQLStockDatabase mothersSQLStockDatabase = new MothersSQLStockDatabase();
-        assert(mothersSQLStockDatabase.getStockpointCount() == 292686);
+        assert(mothersSQLStockDatabase.getStockpointCount() == 25860);
     }
 }
