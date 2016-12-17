@@ -8,20 +8,12 @@ import java.util.ArrayList;
 public class Leader {
 
     public String mStockName;
-    public String mDateUp;
-    public int mDaysUp;
-    public double mCurrentStockPrice;
     public ArrayList<Follower> mFollowers;
+    public int mTimesLead;
 
-    public Leader(String mStockName, String mDateUp, int mDaysUp, double currentStockPrice) {
+    public Leader(String mStockName, int mTimesLead) {
         this.mStockName = mStockName;
-        this.mDateUp = mDateUp;
-        this.mDaysUp = mDaysUp;
-        this.mCurrentStockPrice = currentStockPrice;
-    }
-
-    public Leader() {
-
+        this.mTimesLead = mTimesLead;
     }
 
     public void addFollower(Follower follower) {

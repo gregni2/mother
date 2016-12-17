@@ -3,7 +3,6 @@ package com.mother2.stocks;
 import com.mother2.stocks.StockDownloader.StockPoint;
 import com.mother2.stocks.StockDownloader.datacollector.MothersSQLStockDatabase;
 import com.mother2.stocks.StockDownloader.YahooFinanceStockDownloader;
-import com.mother2.stocks.Analyzer.datacorolators.LeaderFinder;
 import com.mother2.stocks.StockDownloader.StockSymbolGenerator;
 
 import java.util.ArrayList;
@@ -81,10 +80,6 @@ public class Mother {
 
     public void listAllStocks()  {
         mothersDatabase.listAllStocks();
-    }
-
-    public void findLeadersAndFollowers() {
-        LeaderFinder finder = new LeaderFinder(mothersDatabase, 5, 1, 1, 0.10);
     }
 
 

@@ -69,12 +69,11 @@ class StockPriceupLeaderIndentiferTest extends GroovyTestCase {
         // Get mother's database.
         //
         MothersSQLStockDatabase mothersSQLStockDatabase = new MothersSQLStockDatabase();
-        //mothersSQLStockDatabase.listAllStocks();
 
         //
         // Create the stock change identifier.
         //
-        StockPriceupLeaderIndentifer stockPriceupLeaderIndentifer = new StockPriceupLeaderIndentifer(mothersSQLStockDatabase);
+        StockPriceupLeaderIndentifer stockPriceupLeaderIndentifer = new StockPriceupLeaderIndentifer(mothersSQLStockDatabase, /* size of names */ 2);
 
         //
         // Look for streaks.
@@ -84,7 +83,7 @@ class StockPriceupLeaderIndentiferTest extends GroovyTestCase {
         List<Streak> completeStreakList = new ArrayList<>();
         int count = 0;
         System.out.println("Generating stocks names. Number of names = " + stockSymbolGenerator.getStockNames().size());
-        System.out.println("Looking at ")
+        System.out.println("Streaks found = ")
         while (stockIterator.hasNext()) {
             //
             // Look for a streak.
@@ -94,6 +93,8 @@ class StockPriceupLeaderIndentiferTest extends GroovyTestCase {
             stockPriceupLeaderIndentifer.getAllStreaksForStock(name, streakList, /* what's a streak*/ 10);
             completeStreakList.addAll(streakList);
             count++;
+
+            System.out.print(" " + completeStreakList.size());
         }
 
         //
@@ -122,12 +123,30 @@ class StockPriceupLeaderIndentiferTest extends GroovyTestCase {
         }
     }
 
+    void testGetListOfLeaders() {
+        //downloadYahooHistoricalStocks();
 
-    public void save(String fileName, List<Streak> streaks) throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter(new FileOutputStream(fileName));
-        for (Streak streak : streaks)
-            pw.println(streak);
-        pw.close();
+        //
+        // Create the stock change identifier.
+        //
+        StockPriceupLeaderIndentifer stockPriceupLeaderIndentifer = new StockPriceupLeaderIndentifer(new MothersSQLStockDatabase(), 2);
+
+        //
+        // Get all the leaders from the historical data.
+        //
+        ArrayList<Leader> listOfLeaders = new ArrayList<>();
+        stockPriceupLeaderIndentifer.getListOfLeaders(listOfLeaders, /* WhatsAStreak */6, /* daysToFollow */ 30);
+
+    }
+
+    private void downloadYahooHistoricalStocks() {
+        final int MAX_STOCKS_TO_READ = 50000;
+        final GregorianCalendar START_STOCK_HISTORY = new GregorianCalendar(2005, 1, 1);
+        final GregorianCalendar END_STOCK_HISTORY = new GregorianCalendar(2015, 3, 30);
+        YahooStocksToDatabaseDownloader yahooStocksToDatabaseDownloader =
+                new YahooStocksToDatabaseDownloader(MAX_STOCKS_TO_READ, START_STOCK_HISTORY, END_STOCK_HISTORY);
+        yahooStocksToDatabaseDownloader.downloadStocks(2 /*stock names*/, 5/*sleeping mintes*/);
+
     }
 
 

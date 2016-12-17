@@ -4,6 +4,7 @@ import com.mother2.stocks.Analyzer.datacorolators.Follower;
 import com.mother2.stocks.Analyzer.datacorolators.Lead;
 import com.mother2.stocks.Analyzer.datacorolators.Leader;
 import com.mother2.stocks.Analyzer.datacorolators.Streak;
+import com.mother2.stocks.StockDownloader.StockSymbolGenerator;
 import com.mother2.stocks.StockDownloader.datacollector.MothersSQLStockDatabase;
 
 import java.sql.ResultSet;
@@ -18,64 +19,20 @@ import java.util.*;
  * Created by gregorynield on 10/1/16.
  */
 public class StockPriceupLeaderIndentifer extends LeaderIdentifier {
-
-    private static final int MAX_STOCKS_TO_READ = 100;
     private static final GregorianCalendar START_STOCK_HISTORY = new GregorianCalendar(2010, 1, 1);
     private static final GregorianCalendar END_STOCK_HISTORY = new GregorianCalendar(2015, 3, 30);
     private MothersSQLStockDatabase mMothersDatabase = new MothersSQLStockDatabase();
     private Statement statement = null;
+    private int mStockNameSize = 0;
 
-    StockPriceupLeaderIndentifer(MothersSQLStockDatabase mothersDatabase) {
+    StockPriceupLeaderIndentifer(MothersSQLStockDatabase mothersDatabase, int stockNameSizes) {
             try {
                 statement = mMothersDatabase.getmConnection().createStatement();
             } catch (SQLException e) {
                  e.printStackTrace();
             }
             mMothersDatabase = mothersDatabase;
-    }
-
-
-  /*  public boolean isLeader(String stockSymbol, int numOfDaysForAStreak) {
-
-        //
-        // Are their times it went up for a while.
-        //
-        List<Streak> upPointsList =  new ArrayList<>();
-
-        getAllStreaksForStock(stockSymbol, upPointsList, numOfDaysForAStreak);
-
-        if (upPointsList.size() > 0) {
-            System.out.println("Possible leader. It had streaks." + upPointsList.size() + stockSymbol);
-
-            //
-            // Are their times when stocks followed after a given period of time.
-            //
-            boolean didStocksFollow = didStocksFollow(stockSymbol, upPointsList);
-        }
-
-
-        return false;
-    }
-    */
-
-
-
-    public void getLeadersList(List<Leader> leaders) {
-
-    }
-
-    private boolean didStocksFollow(String stockSymbol, List<Streak> upPointsList) {
-        return false;
-    }
-
-    private class StockPosition {
-        public Date mDate;
-        public Double mPrice;
-
-        public StockPosition(Date date, Double price) {
-            mDate = date;
-            mPrice = price;
-        }
+            mStockNameSize = stockNameSizes;
     }
 
     public void getAllStreaksForStock(String stockSymbol, List<Streak> streakList, int numOfDaysForAStreak) {
@@ -110,7 +67,7 @@ public class StockPriceupLeaderIndentifer extends LeaderIdentifier {
                         currentDaysOnStreak++;
                     } else {
                         if (currentDaysOnStreak > numOfDaysForAStreak) {
-                            System.out.println("Streak found for " + stockname + " : streak = " + currentDaysOnStreak + " starting = " + dateupString);
+                            // System.out.println("Streak found for " + stockname + " : streak = " + currentDaysOnStreak + " starting = " + dateupString);
                             streakList.add(new Streak(stockname, dateupString, currentDaysOnStreak, startPrice));
                         }
 
@@ -183,6 +140,68 @@ public class StockPriceupLeaderIndentifer extends LeaderIdentifier {
         }
     }
 
+    public void getListOfLeaders(ArrayList<Leader> listOfLeader, int whatsAStreak, int daysToFollow) {
+
+        List<Streak> completeStreakList = new ArrayList<>();
+        getListOfAllStreaks(completeStreakList, whatsAStreak);
+
+        //
+        // Get lead list.
+        //
+        List<Lead> leadList = new ArrayList<Lead>();
+        getLeadList(completeStreakList, leadList, daysToFollow);
+
+
+        Map<String, Leader> leaderMap = new HashMap<>();
+        //
+        // Go through each lead and count.
+        //
+        Iterator<Lead> leadListIterator = leadList.iterator();
+        while (leadListIterator.hasNext()) {
+            Lead lead = leadListIterator.next();
+
+            Leader leader = null;
+            if (!leaderMap.containsKey(lead.mStockName)) {
+                leader = new Leader(lead.mStockName, 0);
+            } else {
+                leader = leaderMap.get(lead.mStockName);
+            }
+
+
+            leader.mTimesLead++;
+            leaderMap.put(lead.mStockName,leader);
+        }
+
+        System.out.print("********* THE FINAL LEAD LIST!!! ***********");
+        Iterator<Map.Entry<String, Leader>> iterator = leaderMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Leader> leader = iterator.next();
+            System.out.println("Leader " +  leader.getKey() + " lead = " + leader.getValue().mTimesLead);
+        }
+    }
+
+    private void getListOfAllStreaks(List<Streak> completeStreakList, int whatsAStreak) {
+        StockSymbolGenerator stockSymbolGenerator = new StockSymbolGenerator(mStockNameSize);
+        Iterator<String> stockIterator = stockSymbolGenerator.getStockNames().iterator();
+        System.out.println("Generating stocks names. Number of names = " + stockSymbolGenerator.getStockNames().size());
+        int count = 0;
+        while (stockIterator.hasNext()) {
+            //
+            // Look for a streak.
+            //
+            List<Streak> streakList = new ArrayList<>();
+            String name = stockIterator.next();
+            getAllStreaksForStock(name, streakList, whatsAStreak);
+            completeStreakList.addAll(streakList);
+
+            boolean isDivisableBy50 = ((completeStreakList.size()%50) ==0);
+            if (isDivisableBy50) {
+                System.out.println("Streaks = " + completeStreakList.size());
+            }
+            count++;
+        }
+    }
+
     class DateComparator implements Comparator<Streak> {
         @Override
         public int compare(Streak a, Streak b) {
@@ -233,7 +252,5 @@ public class StockPriceupLeaderIndentifer extends LeaderIdentifier {
 
         return false;
     }
-
-    boolean isFollower(Leader leader, String possibleFollower) { return false; };
 
 }
